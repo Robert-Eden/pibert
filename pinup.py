@@ -1,6 +1,5 @@
 import RPi.GPIO as GPIO
 import time
-import keyboard
 
 try:
     # Set the GPIO mode
@@ -27,13 +26,12 @@ try:
 
     print("Press 't' to toggle the pin. Press 'q' to exit.")
     while True:
-        if keyboard.is_pressed('t'):
+        user_input = input("Enter 't' to toggle the pin or 'q' to quit: ").strip().lower()
+        if user_input == 't':
             # Toggle the pin and print the new state
             new_state = toggle_pin(pin)
             print(f"Pin {pin} is now {'HIGH' if new_state else 'LOW'}")
-            # Wait for a short period to avoid multiple toggles on a single key press
-            time.sleep(0.5)
-        elif keyboard.is_pressed('q'):
+        elif user_input == 'q':
             print("Exiting program.")
             break
 except KeyboardInterrupt:
