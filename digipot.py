@@ -20,7 +20,7 @@ spi.open(bus, device)
 
 # Set SPI speed and mode
 spi.max_speed_hz = 50000000
-spi.mode = 1
+spi.mode = 2
 
 # Define the 16-bit data to send
 data1 = bytearray([0b00000100, 0b00000000])  # 0000010000000000
