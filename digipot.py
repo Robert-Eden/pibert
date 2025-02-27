@@ -1,45 +1,33 @@
-# spitest.py
-# A brief demonstration of the Raspberry Pi SPI interface, using the Sparkfun
-# Pi Wedge breakout board and a SparkFun Serial 7 Segment display:
-# https://www.sparkfun.com/products/11629
-
+import smbus
 import time
-import spidev
 
-# We only have SPI bus 0 available to us on the Pi
-bus = 0
+# Function to convert binary string to byte array
+def binary_string_to_byte_array(binary_string):
+    byte_array = bytearray()
+    for i in range(0, len(binary_string), 8):
+        byte = binary_string[i:i+8]
+        byte_array.append(int(byte, 2))
+    return byte_array
 
-# Device is the chip select pin. Set to 0 or 1, depending on the connections
-device = 0
+def main():
+    # Initialize I2C bus
+    bus = smbus.SMBus(1)  # Use I2C bus 1
 
-# Enable SPI
-spi = spidev.SpiDev()
+    # I2C address of the peripheral device
+    device_address = 0x2F  # Replace with your device's I2C address
 
-# Open a connection to a specific bus and device (chip select pin)
-spi.open(bus, device)
+    # Ask the user for a binary message
+    binary_message = input("Enter the binary message to send (1's and 0's): ")
 
-# Set SPI speed and mode
-spi.max_speed_hz = 50000
-spi.mode = 2
+    # Convert the binary message to a byte array
+    byte_array = binary_string_to_byte_array(binary_message)
 
-# Define the 16-bit data to send
-data1 = bytearray([0b00000100, 0b00000000])  # 0000010000000000
-data2 = bytearray([0b00000111, 0b11111111])  # 0000011111111111
+    # Send the byte array to the peripheral device
+    for byte in byte_array:
+        bus.write_byte(device_address, byte)
+        time.sleep(0.1)  # Small delay between bytes
 
-try:
-    while True:
-        # Send the first byte array over SPI
-        spi.writebytes(data1)
-        print("Sent data: 0000010000000000")
-        time.sleep(2)
+    print("Message sent successfully!")
 
-        # Send the second byte array over SPI
-        spi.writebytes(data2)
-        print("Sent data: 0000011111111111")
-        time.sleep(2)
-except KeyboardInterrupt:
-    print("Program terminated")
-finally:
-    # Clean up and close the SPI connection
-    spi.close()
-
+if __name__ == "__main__":
+    main()
